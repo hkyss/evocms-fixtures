@@ -88,10 +88,49 @@ knows about.
 
 When the last batch is gone the record tables go with it.
 
+## The panel
+
+A pill in the corner of the site, for the same person who would otherwise be typing these
+commands into a terminal on the other screen. It lists the batches, generates one, drops one,
+and runs a read-only benchmark over the queries Evolution leans on.
+
+It is off unless the environment says otherwise, and the only value that turns it on is
+`gated`:
+
+```bash
+FIXTURES_PANEL=gated
+```
+
+`true` is refused. The endpoint behind the pill writes and deletes rows, so a setting that
+would mean "on for everyone" has no honest use — and Evolution hard-codes `app.env` to
+`production` on every site there is, so a check for the environment would protect nobody.
+
+What `gated` adds is a gate: the Evolution integration draws the panel only for a signed-in
+manager session, and every request the panel makes carries a token derived from that session
+and the site id. A request without it is refused, so a page on another origin cannot make your
+browser generate content for it.
+
+Two more limits. The panel writes at most `FIXTURES_PANEL_MAX` documents in one go, 20000 by
+default, because a web request that takes minutes is a web request that times out halfway.
+And the benchmark only reads.
+
+Registering the panel means registering the Evolution integration rather than the plain
+provider:
+
+```php
+<?php return hkyss\Fixtures\Integration\Evolution\FixturesEvolutionServiceProvider::class;
+```
+
+It carries the console commands too, so there is nothing to lose by using it.
+
 ## What it will not do
 
 **Write anything you did not ask for.** No migrations, no seeding on install, no defaults
 applied to your site. `fixture:make` states what it is about to write and asks first.
+
+**Answer a request it cannot place.** The panel's endpoint refuses an action it does not
+recognise, a token that was not minted for this session, and a batch larger than its ceiling —
+before it touches a table.
 
 **Guess at what it owns.** Removal works from a recorded range, not from a naming convention
 or a marker column. If the record is gone, the package will not try to identify its rows by

@@ -1,0 +1,41 @@
+#evofx{position:fixed;right:16px;bottom:16px;z-index:2147483000;font:13px/1.45 ui-sans-serif,-apple-system,Segoe UI,Roboto,sans-serif;color:#e7e9ee}
+#evofx *{box-sizing:border-box}
+#evofx-pill{display:flex;align-items:center;gap:7px;padding:7px 13px;border:0;border-radius:999px;background:#1b1f2a;color:#e7e9ee;box-shadow:0 6px 22px rgba(0,0,0,.34);cursor:pointer;font:inherit;font-weight:600}
+#evofx-pill:hover{background:#232838}
+#evofx-pill i{width:7px;height:7px;border-radius:50%;background:#5fd08a;flex:none}
+#evofx-pill b{font-weight:500;opacity:.62}
+#evofx-panel{position:absolute;right:0;bottom:44px;width:430px;max-width:calc(100vw - 32px);max-height:min(620px,calc(100vh - 90px));display:flex;flex-direction:column;background:#141821;border:1px solid #262c3a;border-radius:12px;box-shadow:0 18px 52px rgba(0,0,0,.46);overflow:hidden}
+#evofx-panel[hidden]{display:none}
+#evofx h3{margin:0;font-size:13px;font-weight:600}
+#evofx header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #262c3a}
+#evofx header button{border:0;background:none;color:#7b8497;cursor:pointer;font:inherit;font-size:17px;line-height:1;padding:0 2px}
+#evofx header button:hover{color:#e7e9ee}
+#evofx nav{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid #262c3a}
+#evofx nav button{border:0;background:none;color:#7b8497;cursor:pointer;font:inherit;padding:6px 11px;border-radius:7px 7px 0 0}
+#evofx nav button[aria-selected=true]{color:#e7e9ee;background:#1b1f2a}
+#evofx .body{padding:13px 14px;overflow:auto}
+#evofx section[hidden]{display:none}
+#evofx .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+#evofx label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:#98a1b4}
+#evofx input{width:100%;padding:6px 8px;border:1px solid #2d3444;border-radius:6px;background:#0e1119;color:#e7e9ee;font:inherit}
+#evofx input:focus{outline:0;border-color:#4d78c8}
+#evofx .act{margin-top:12px;display:flex;gap:8px;align-items:center}
+#evofx button.go{padding:7px 14px;border:0;border-radius:7px;background:#3f6fd0;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+#evofx button.go:hover{background:#4a7ce0}
+#evofx button.go[disabled]{opacity:.5;cursor:default}
+#evofx button.thin{padding:4px 9px;border:1px solid #2d3444;border-radius:6px;background:none;color:#98a1b4;font:inherit;font-size:11.5px;cursor:pointer}
+#evofx button.thin:hover{color:#e7e9ee;border-color:#3c4557}
+#evofx button.danger:hover{color:#ff9d9d;border-color:#6b3535}
+#evofx .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1e2431}
+#evofx .row:last-child{border-bottom:0}
+#evofx .row div{min-width:0}
+#evofx .row strong{font-weight:600}
+#evofx .row span{display:block;color:#7b8497;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#evofx table{width:100%;border-collapse:collapse}
+#evofx td{padding:5px 0;border-bottom:1px solid #1e2431;vertical-align:baseline}
+#evofx td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:#9fd8b4}
+#evofx td.q{color:#c9cedb}
+#evofx td small{color:#6e7789;display:block;font-size:11px}
+#evofx .note{color:#7b8497;font-size:11.5px;margin:10px 0 0}
+#evofx .bad{color:#ff9d9d}
+#evofx .empty{color:#7b8497;padding:14px 0;text-align:center}
