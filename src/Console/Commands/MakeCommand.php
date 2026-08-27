@@ -38,8 +38,6 @@ class MakeCommand extends DatabaseCommand
         $this->newLine();
         $this->reportTarget();
         $this->line(sprintf('About to write <options=bold>%s</>.', $recipe->describe()));
-        $this->line('Every row goes above the highest id each table already holds, and the batch is');
-        $this->line('recorded so <comment>fixture:drop</comment> can take exactly it back out.');
         $this->newLine();
 
         if (!$this->option('force') && !$this->confirm('Generate?', false)) {

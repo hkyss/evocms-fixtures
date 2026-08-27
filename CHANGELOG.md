@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2026-08-27
+
+### Changed
+
+- `fixture:make` no longer opens with two lines promising that every row lands above what the
+  tables already hold and that the batch is recorded so it can be dropped again. The first is
+  what the package is for, and the second is printed as a runnable command once the batch
+  exists. What is left is where it writes, what it is about to write, and the question.
+
 ## [1.2.1] - 2026-08-27
 
 ### Changed
