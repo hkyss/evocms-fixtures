@@ -77,6 +77,7 @@ class Endpoint
         $batch = $this->generator->make(new Recipe(
             $documents,
             (int) ($payload['folders'] ?? 0),
+            (int) ($payload['depth'] ?? 0),
             (int) ($payload['templates'] ?? 4),
             (int) ($payload['tmplvars'] ?? 10),
             (int) ($payload['values'] ?? 4),

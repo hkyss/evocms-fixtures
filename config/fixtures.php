@@ -19,6 +19,7 @@ return [
     'defaults' => [
         'documents' => 1000,
         'folders' => 0,
+        'max_depth' => 0,
         'templates' => 4,
         'tmplvars' => 10,
         'values_per_document' => 4,

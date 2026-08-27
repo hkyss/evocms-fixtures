@@ -11,6 +11,7 @@ final class Recipe
     public function __construct(
         public readonly int $documents = 1000,
         public readonly int $folders = 0,
+        public readonly int $maxDepth = 0,
         public readonly int $templates = 4,
         public readonly int $tmplvars = 10,
         public readonly int $valuesPerDocument = 4,
@@ -21,6 +22,8 @@ final class Recipe
         $this->refuse($documents < 1, 'A batch of no documents is not a batch.');
         $this->refuse($folders < 0, 'Folders cannot be negative.');
         $this->refuse($folders > $documents, 'There cannot be more folders than documents.');
+        $this->refuse($maxDepth < 0, 'A depth cannot be negative.');
+        $this->refuse($maxDepth === 1 && $folders > 0, 'A tree one level deep holds no folders.');
         $this->refuse($templates < 1, 'A document needs a template to point at.');
         $this->refuse($tmplvars < 0, 'Template variables cannot be negative.');
         $this->refuse($valuesPerDocument < 0, 'Values per document cannot be negative.');
@@ -76,6 +79,7 @@ final class Recipe
         return [
             'documents' => $this->documents,
             'folders' => $this->folders,
+            'max_depth' => $this->maxDepth,
             'templates' => $this->templates,
             'tmplvars' => $this->tmplvars,
             'values_per_document' => $this->valuesPerDocument,
@@ -91,6 +95,7 @@ final class Recipe
         return new self(
             (int) ($data['documents'] ?? 1),
             (int) ($data['folders'] ?? 0),
+            (int) ($data['max_depth'] ?? 0),
             (int) ($data['templates'] ?? 1),
             (int) ($data['tmplvars'] ?? 0),
             (int) ($data['values_per_document'] ?? 0),

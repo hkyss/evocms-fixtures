@@ -13,6 +13,7 @@ class MakeCommand extends DatabaseCommand
     protected $signature = 'fixture:make
         {--documents= : How many documents to generate}
         {--folders= : How many of them open as containers}
+        {--depth= : Cap the tree at this many levels; 0 lets it find its own}
         {--templates= : How many templates to generate}
         {--tvs= : How many template variables to generate}
         {--values= : Template variable values per document}
@@ -63,6 +64,7 @@ class MakeCommand extends DatabaseCommand
         return new Recipe(
             $this->number('documents', 'fixtures.defaults.documents', 1000),
             $this->number('folders', 'fixtures.defaults.folders', 0),
+            $this->number('depth', 'fixtures.defaults.max_depth', 0),
             $this->number('templates', 'fixtures.defaults.templates', 4),
             $this->number('tvs', 'fixtures.defaults.tmplvars', 10),
             $this->number('values', 'fixtures.defaults.values_per_document', 4),

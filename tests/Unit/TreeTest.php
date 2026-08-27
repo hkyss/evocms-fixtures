@@ -58,13 +58,47 @@ class TreeTest extends TestCase
         }
     }
 
-    public function testOnlyTheFirstNodesOpenAsContainers(): void
+    public function testContainersAreSpreadAcrossTheRangeRatherThanTakenFromTheFront(): void
     {
-        $tree = Tree::of(40, 6);
+        $tree = Tree::of(400, 8);
+        $folders = [];
 
-        $this->assertTrue($tree->isFolder(6));
-        $this->assertFalse($tree->isFolder(7));
-        $this->assertFalse($tree->isFolder(40));
+        for ($node = 1; $node <= 400; $node++) {
+            if ($tree->isFolder($node)) {
+                $folders[] = $node;
+            }
+        }
+
+        $this->assertCount(8, $folders);
+        $this->assertGreaterThan(300, max($folders), 'the last container should be near the end');
+        $this->assertLessThan(100, min($folders), 'the first container should be near the start');
+    }
+
+    public function testAnUncappedTreeGoesDeeperThanOneLevel(): void
+    {
+        $tree = Tree::of(20000, 400);
+
+        $this->assertGreaterThan(2, $tree->deepest(), 'containers spread through the range should nest');
+    }
+
+    public function testACapIsNeverExceeded(): void
+    {
+        foreach ([2, 3, 5] as $cap) {
+            $tree = Tree::of(5000, 200, $cap);
+
+            $this->assertSame($cap - 1, $tree->deepest(), sprintf('a cap of %d should fill exactly %d levels', $cap, $cap));
+        }
+    }
+
+    public function testACapOfOneLeavesEveryDocumentAtTheRoot(): void
+    {
+        $tree = Tree::of(500, 20, 1);
+
+        $this->assertSame(0, $tree->deepest());
+
+        for ($node = 1; $node <= 500; $node++) {
+            $this->assertFalse($tree->isFolder($node));
+        }
     }
 
     public function testAParentIsAlwaysAFolderOrTheRoot(): void

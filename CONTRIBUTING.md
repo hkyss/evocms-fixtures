@@ -12,7 +12,9 @@ they bound every change made here:
    delete somebody's content.
 2. **Generate what the CMS would have generated.** A closure table that disagrees with the
    tree, or two values for one variable on one document, makes a database that benchmarks and
-   tests will lie about. The round trip checks this; keep it checking.
+   tests will lie about. So does a tree one level deep: it passes every referential check and
+   still measures nothing, because no query over it ever descends. The round trip checks the
+   first two and `TreeTest` the third; keep all three checking.
 
 ## Comments
 

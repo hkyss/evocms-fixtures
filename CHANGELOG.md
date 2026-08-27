@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-27
+
+### Fixed
+
+- The generated tree was one level deep whatever it was asked for. Containers were taken from
+  the front of the range, so they hung off the root and everything else sat directly under
+  them; and because a container landed on an exact multiple of the step while the pool was as
+  large as the containers opened so far, the arithmetic picking its parent came out zero every
+  time, which is the root. Containers are now spread across the range and the parent is picked
+  from a sequence that does not share a factor with the step.
+
+### Added
+
+- `--depth` caps the number of levels; zero, the default, lets the tree find its own.
+
 ## [1.1.0] - 2026-08-27
 
 ### Added

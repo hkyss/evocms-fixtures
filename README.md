@@ -55,7 +55,7 @@ written after it lands above.
 
 ```bash
 php artisan fixture:make \
-  --documents=20000 --folders=400 --templates=8 --tvs=20 --values=6 \
+  --documents=20000 --folders=400 --depth=6 --templates=8 --tvs=20 --values=6 \
   --users=500 --member-groups=10 --document-groups=5
 ```
 
@@ -63,10 +63,14 @@ Defaults live in the config, and any option not given falls back to them.
 
 ## The tree
 
-Documents are not a flat list. The first `--folders` of them open as containers, and every
-document after that is placed under one of the containers opened so far — spread by a prime
-step, so the shape is neither a chain nor a fan, and is the same on every run with the same
-numbers.
+Documents are not a flat list. `--folders` of them open as containers, spread evenly across the
+whole range rather than taken from the front, and every document is placed under one of the
+containers opened before it. Containers opened at the front would all hang off the root and
+everything else would sit one level under them, which is a wide list wearing a tree's clothes.
+
+`--depth` caps how many levels the result may have; left at zero the tree finds its own, which
+for a few hundred containers is a handful of levels deep. The shape is the same on every run
+with the same numbers.
 
 The closure table is written from that shape, in the convention Evolution uses: a row for the
 node itself at depth 0 and one for each ancestor above it, with no row for the virtual root.

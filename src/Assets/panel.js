@@ -48,6 +48,7 @@
     return '<form id="evofx-make"><div class="grid">'
       + field('documents', 'Documents', 5000)
       + field('folders', 'Folders (0 derives)', 0)
+      + field('depth', 'Depth cap (0 is free)', 0)
       + field('templates', 'Templates', 4)
       + field('tmplvars', 'Template variables', 10)
       + field('values', 'Values per document', 4)

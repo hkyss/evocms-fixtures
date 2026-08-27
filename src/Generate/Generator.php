@@ -49,7 +49,7 @@ class Generator
             $announce('template variables', $recipe->tmplvars);
         }
 
-        $tree = Tree::of($recipe->documents, $recipe->foldersOrDefault());
+        $tree = Tree::of($recipe->documents, $recipe->foldersOrDefault(), $recipe->maxDepth);
         $documents = $this->reserve('site_content');
         $ranges[] = $this->note($batch, 'site_content', 'id', $documents, $this->writer->into(
             'site_content',
@@ -62,7 +62,7 @@ class Generator
             'site_content_closure',
             $this->closure($tree, $documents)
         ));
-        $announce('closure rows', $tree->closureRows());
+        $announce(sprintf('closure rows, %d level(s) deep', $tree->deepest() + 1), $tree->closureRows());
 
         if ($recipe->valuesPerDocument > 0) {
             $values = $this->reserve('site_tmplvar_contentvalues');
