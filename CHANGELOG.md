@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-08-27
+
+### Changed
+
+- The panel says less. The form's note repeated the limit the endpoint states when it refuses
+  a batch, and promised the writes could be dropped again beside the tab that drops them; the
+  benchmark explained itself in a placeholder and called itself read-only under its results.
+  All of it is in the README. The ceiling moved into the Documents label, which is read before
+  the number is typed rather than after it is refused.
+
 ## [1.2.0] - 2026-08-27
 
 ### Fixed

@@ -46,7 +46,7 @@
 
   function generate() {
     return '<form id="evofx-make"><div class="grid">'
-      + field('documents', 'Documents', 5000)
+      + field('documents', 'Documents (max ' + ceiling + ')', 5000)
       + field('folders', 'Folders (0 derives)', 0)
       + field('depth', 'Depth cap (0 is free)', 0)
       + field('templates', 'Templates', 4)
@@ -55,14 +55,12 @@
       + field('users', 'Users', 0)
       + field('member_groups', 'Member groups', 0)
       + field('document_groups', 'Document groups', 0)
-      + '</div><div class="act"><button class="go" type="submit">Generate</button></div>'
-      + '<p class="note">At most ' + ceiling + ' documents from here; larger batches belong on the console, '
-      + 'where nothing times out. Everything written is recorded and can be dropped again.</p></form>';
+      + '</div><div class="act"><button class="go" type="submit">Generate</button></div></form>';
   }
 
   function bench() {
     if (!state.bench) {
-      return '<p class="empty">Reads the queries Evolution leans on and reports the median of each.</p>'
+      return '<p class="empty">Not run.</p>'
         + '<div class="act"><button class="go" data-bench="1">Run benchmark</button></div>';
     }
 
@@ -81,7 +79,7 @@
     }).join('');
 
     return '<table>' + rows + '</table>'
-      + '<p class="note">Median of ' + state.bench.runs + ' runs, read-only. ' + counts + '</p>'
+      + '<p class="note">Median of ' + state.bench.runs + ' runs. ' + counts + '</p>'
       + '<div class="act"><button class="go" data-bench="1">Run again</button></div>';
   }
 
