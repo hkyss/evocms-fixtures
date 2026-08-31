@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-08-31
+
+### Changed
+
+- The code is unchanged from 1.2.3. GitHub answers 400 to the one address composer downloads a
+  package from — `api.github.com/repos/hkyss/evocms-fixtures/zipball/<sha>` — for the commit
+  1.2.3 points at, while that same commit comes down by tag, by short sha, through `zip/` and
+  as a tarball, and every other commit in the repository zips fine. Nothing here is broken and
+  there is nothing to wait for on this side: a new commit is a new address, and an install that
+  asks for `^1.0` gets one that serves.
+
 ## [1.2.3] - 2026-08-28
 
 ### Changed
