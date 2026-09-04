@@ -29,9 +29,8 @@ final class Tree
         $this->depths = $depths;
     }
 
-    // Containers are spread across the whole range rather than taken from the front. Opened at
-    // the front they would all hang off the root and everything else would sit one level under
-    // them, which is a wide list wearing a tree's clothes.
+    // Containers are spread across the whole range: opened at the front they would all hang off
+    // the root, leaving a wide list wearing a tree's clothes.
     public static function of(int $documents, int $folders, int $maxDepth = 0): self
     {
         $pool = [0];
@@ -43,9 +42,8 @@ final class Tree
         $seed = 2463534242;
 
         for ($node = 1; $node <= $documents; $node++) {
-            // Not the node number: containers land on exact multiples of the step, and the pool
-            // is as large as the containers opened so far, so that product is always divisible
-            // by the modulus and every container would come out a child of the root.
+            // Not the node number: containers land on exact multiples of the step, which the pool size
+            // always divides, so every one of them would come out a child of the root.
             $seed = ($seed * 1103515245 + 12345) & 0x7fffffff;
             $parent = $pool[$seed % count($pool)];
             $parents[$node] = $parent;

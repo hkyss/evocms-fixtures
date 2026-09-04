@@ -15,8 +15,6 @@ final class Config
     ) {
     }
 
-    // Only 'gated' turns the panel on. true is refused on purpose: this endpoint writes and
-    // deletes rows, and a value that means "on for everyone" has no honest use.
     public static function fromValue(mixed $enabled, ?Closure $gate, int $maxDocuments): self
     {
         $gated = is_string($enabled) && strtolower(trim($enabled)) === 'gated';

@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Symbols the Evolution integration talks to. Evolution CMS is not a dev dependency of this
- * package, so static analysis has to be told that its global helper exists.
- */
+/** Evolution CMS is not a dev dependency, so static analysis has to be told its global helper exists. */
 
 declare(strict_types=1);
 
