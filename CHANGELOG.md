@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2026-10-29
+
+### Changed
+
+- The comments the code already says are gone from the config, the panel and the plan. Nothing
+  that runs has changed.
+
 ## [1.2.5] - 2026-09-01
 
 ### Changed
