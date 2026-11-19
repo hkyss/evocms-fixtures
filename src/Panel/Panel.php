@@ -12,16 +12,22 @@ final class Panel
     ) {
     }
 
-    public function injectInto(string $page): string
+    public function injectInto(string $page, string $contentType = 'text/html'): string
     {
-        $markup = $this->render();
         $closing = strripos($page, '</body>');
 
-        if ($closing === false) {
-            return $page . $markup;
+        if ($closing === false || !self::isHtml($contentType)) {
+            return $page;
         }
 
-        return substr($page, 0, $closing) . $markup . substr($page, $closing);
+        return substr($page, 0, $closing) . $this->render() . substr($page, $closing);
+    }
+
+    public static function isHtml(string $contentType): bool
+    {
+        $type = strtolower(trim(explode(';', $contentType)[0]));
+
+        return $type === 'text/html' || $type === 'application/xhtml+xml';
     }
 
     public function render(): string

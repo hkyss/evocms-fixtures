@@ -18,11 +18,48 @@ class PanelTest extends TestCase
         $this->assertStringEndsWith('</body></html>', $page);
     }
 
-    public function testAPageWithoutABodyTagGetsItAtTheEnd(): void
+    public function testAPageWithoutABodyTagIsLeftAlone(): void
     {
-        $page = (new Panel('abc', 100))->injectInto('just text');
+        $this->assertSame('just text', (new Panel('abc', 100))->injectInto('just text'));
+    }
 
-        $this->assertStringStartsWith('just text<div id="evofx"', $page);
+    /** @dataProvider documentsThatAreNotHtml */
+    public function testADocumentThatIsNotHtmlIsLeftAlone(string $contentType): void
+    {
+        $page = '{"note": "</body>"}';
+
+        $this->assertSame($page, (new Panel('abc', 100))->injectInto($page, $contentType));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function documentsThatAreNotHtml(): array
+    {
+        return [
+            'json' => ['application/json'],
+            'xml' => ['text/xml; charset=utf-8'],
+            'plain text' => ['text/plain'],
+            'rss' => ['application/rss+xml'],
+            'javascript' => ['application/javascript'],
+        ];
+    }
+
+    /** @dataProvider htmlDocuments */
+    public function testAnHtmlDocumentGetsThePanel(string $contentType): void
+    {
+        $page = (new Panel('abc', 100))->injectInto('<body>x</body>', $contentType);
+
+        $this->assertStringContainsString('<div id="evofx"', $page);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function htmlDocuments(): array
+    {
+        return [
+            'plain' => ['text/html'],
+            'charset' => ['text/html; charset=UTF-8'],
+            'upper case' => ['TEXT/HTML'],
+            'xhtml' => ['application/xhtml+xml'],
+        ];
     }
 
     public function testItGoesInAheadOfTheLastClosingBodyTagAndNotTheFirstMention(): void

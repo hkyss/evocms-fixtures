@@ -120,6 +120,10 @@ manager session, and every request the panel makes carries a token derived from 
 and the site id. A request without it is refused, so a page on another origin cannot make your
 browser generate content for it.
 
+The panel is added to HTML pages only: the response's content type must be `text/html` or
+`application/xhtml+xml` and the page must have a closing `</body>` to put it before. Feeds, JSON
+and other documents come out as they were.
+
 Two more limits. The panel writes at most `FIXTURES_PANEL_MAX` documents in one go, 20000 by
 default, because a web request that takes minutes is a web request that times out halfway.
 And the benchmark only reads.
