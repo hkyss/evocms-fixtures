@@ -21,7 +21,7 @@ class MakeCommand extends DatabaseCommand
         {--member-groups= : How many member groups to put them in}
         {--document-groups= : How many document groups to gate the content with}
         {--database= : Connection to write to}
-        {--force : Skip the confirmation}';
+        {--force : Skip the confirmation, and write into a site that does not look like a development one}';
 
     protected $description = 'Generate a batch of Evolution content, and record what it was';
 
@@ -31,6 +31,17 @@ class MakeCommand extends DatabaseCommand
             $recipe = $this->recipe();
         } catch (InvalidArgumentException $e) {
             $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $environment = $this->environment();
+
+        if (!$this->option('force') && !$environment->looksLikeDevelopment()) {
+            $this->error(sprintf(
+                'This site does not look like a development one (%s). Run it again with --force to write generated content into it.',
+                $environment->describe()
+            ));
 
             return self::FAILURE;
         }

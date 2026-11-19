@@ -48,6 +48,14 @@ abstract class DatabaseCommand extends Command
         }
     }
 
+    protected function environment(): Environment
+    {
+        $given = getenv('APP_ENV');
+        $name = is_string($given) && $given !== '' ? $given : (string) $this->setting('app.env', 'production');
+
+        return new Environment($name, filter_var($this->setting('app.debug', false), FILTER_VALIDATE_BOOLEAN));
+    }
+
     protected function reportTarget(): void
     {
         $connection = $this->connection();

@@ -61,6 +61,12 @@ php artisan fixture:make \
 
 Defaults live in the config, and any option not given falls back to them.
 
+`fixture:make` refuses to run on a site that does not look like a development one: `app.env`
+(or `APP_ENV` in the process environment) must be `local`, `development`, `dev` or `testing`,
+or `app.debug` must be on. Evolution ships with `production` and debug off, so on a stock
+install you pass `--force`, which also skips the confirmation. `--no-interaction` does not
+count as `--force`.
+
 ## The tree
 
 Documents are not a flat list. `--folders` of them open as containers, spread evenly across the
