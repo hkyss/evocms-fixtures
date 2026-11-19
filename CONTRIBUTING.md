@@ -6,7 +6,7 @@ Write rows into a database that belongs to someone else, in quantity. Two rules 
 they bound every change made here:
 
 1. **Own what you wrote, and nothing else.** Every generated row goes above the highest id its
-   table already holds, and the range is recorded before the batch is called done. Removal
+   table already holds, and the range is recorded before each chunk of it is written. Removal
    works from that record. A change that makes rows identifiable by shape rather than by
    record — a marker column, a name prefix, a magic id offset — is a change that will one day
    delete somebody's content.

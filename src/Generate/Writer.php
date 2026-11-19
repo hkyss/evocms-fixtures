@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hkyss\Fixtures\Generate;
 
+use Closure;
 use Illuminate\Database\Connection;
 
 final class Writer
@@ -15,7 +16,7 @@ final class Writer
     }
 
     /** @param iterable<array<string, mixed>> $rows */
-    public function into(string $table, iterable $rows): int
+    public function into(string $table, iterable $rows, ?Closure $before = null): int
     {
         $written = 0;
         $buffer = [];
@@ -24,6 +25,7 @@ final class Writer
             $buffer[] = $row;
 
             if (count($buffer) >= $this->chunk) {
+                $before !== null && $before($buffer);
                 $this->connection->table($table)->insert($buffer);
                 $written += count($buffer);
                 $buffer = [];
@@ -31,6 +33,7 @@ final class Writer
         }
 
         if ($buffer !== []) {
+            $before !== null && $before($buffer);
             $this->connection->table($table)->insert($buffer);
             $written += count($buffer);
         }

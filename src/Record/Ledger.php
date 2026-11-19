@@ -88,6 +88,19 @@ class Ledger
         ]);
     }
 
+    public function extend(int $batch, Range $range): void
+    {
+        $this->connection->table(self::RANGES)
+            ->where('batch_id', $batch)
+            ->where('table_name', $range->table)
+            ->update(['last_key' => $range->last, 'rows_written' => $range->rows]);
+    }
+
+    public function release(int $batch, string $table): void
+    {
+        $this->connection->table(self::RANGES)->where('batch_id', $batch)->where('table_name', $table)->delete();
+    }
+
     /** @return list<Batch> */
     public function batches(): array
     {

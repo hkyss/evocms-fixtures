@@ -11,9 +11,12 @@ use hkyss\Fixtures\Record\Batch;
 use hkyss\Fixtures\Record\Ledger;
 use hkyss\Fixtures\Record\Range;
 use Illuminate\Database\Connection;
+use Illuminate\Database\QueryException;
 
 class Generator
 {
+    private const DUPLICATE_KEY = '23000';
+
     public function __construct(
         private readonly Connection $connection,
         private readonly Ledger $ledger,
@@ -29,47 +32,53 @@ class Generator
         $ranges = [];
 
         $templates = $this->reserve('site_templates');
-        $ranges[] = $this->note($batch, 'site_templates', 'id', $templates, $this->writer->into(
-            'site_templates',
-            $this->templates($recipe, $templates)
-        ));
+        $ranges[] = $this->write($batch, 'site_templates', 'id', $templates, $this->templates($recipe, $templates));
         $announce('templates', $recipe->templates);
 
         $tmplvars = $this->reserve('site_tmplvars');
 
         if ($recipe->tmplvars > 0) {
-            $ranges[] = $this->note($batch, 'site_tmplvars', 'id', $tmplvars, $this->writer->into(
-                'site_tmplvars',
-                $this->tmplvars($recipe, $tmplvars)
-            ));
-            $ranges[] = $this->note($batch, 'site_tmplvar_templates', 'tmplvarid', $tmplvars, $this->writer->into(
+            $ranges[] = $this->write($batch, 'site_tmplvars', 'id', $tmplvars, $this->tmplvars($recipe, $tmplvars));
+            $ranges[] = $this->write(
+                $batch,
                 'site_tmplvar_templates',
+                'tmplvarid',
+                $tmplvars,
                 $this->links($recipe, $tmplvars, $templates)
-            ));
+            );
             $announce('template variables', $recipe->tmplvars);
         }
 
         $tree = Tree::of($recipe->documents, $recipe->foldersOrDefault(), $recipe->maxDepth);
         $documents = $this->reserve('site_content');
-        $ranges[] = $this->note($batch, 'site_content', 'id', $documents, $this->writer->into(
+        $ranges[] = $this->write(
+            $batch,
             'site_content',
+            'id',
+            $documents,
             $this->documents($recipe, $tree, $documents, $templates)
-        ));
+        );
         $announce('documents', $recipe->documents);
 
         $closure = $this->reserve('site_content_closure', 'closure_id');
-        $ranges[] = $this->note($batch, 'site_content_closure', 'closure_id', $closure, $this->writer->into(
+        $ranges[] = $this->write(
+            $batch,
             'site_content_closure',
-            $this->closure($tree, $documents)
-        ));
+            'closure_id',
+            $closure,
+            $this->closure($tree, $documents, $closure)
+        );
         $announce(sprintf('closure rows, %d level(s) deep', $tree->deepest() + 1), $tree->closureRows());
 
         if ($recipe->valuesPerDocument > 0) {
             $values = $this->reserve('site_tmplvar_contentvalues');
-            $ranges[] = $this->note($batch, 'site_tmplvar_contentvalues', 'id', $values, $this->writer->into(
+            $ranges[] = $this->write(
+                $batch,
                 'site_tmplvar_contentvalues',
-                $this->values($recipe, $documents, $tmplvars)
-            ));
+                'id',
+                $values,
+                $this->values($recipe, $documents, $tmplvars, $values)
+            );
             $announce('template variable values', $recipe->values());
         }
 
@@ -118,25 +127,19 @@ class Generator
 
         $ranges = [];
         $users = $this->reserve('users');
-        $ranges[] = $this->note($batch, 'users', 'id', $users, $this->writer->into(
-            'users',
-            $this->rows($recipe->users, static fn (int $n): array => [
-                'id' => $users + $n,
-                'username' => sprintf('fixture-user-%d', $users + $n),
-                'password' => str_repeat('x', 32),
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'users', 'id', $users, $this->rows($recipe->users, static fn (int $n): array => [
+            'id' => $users + $n,
+            'username' => sprintf('fixture-user-%d', $users + $n),
+            'password' => str_repeat('x', 32),
+        ]));
 
         $attributes = $this->reserve('user_attributes');
-        $ranges[] = $this->note($batch, 'user_attributes', 'id', $attributes, $this->writer->into(
-            'user_attributes',
-            $this->rows($recipe->users, static fn (int $n): array => [
-                'id' => $attributes + $n,
-                'internalKey' => $users + $n,
-                'fullname' => sprintf('Fixture user %d', $n + 1),
-                'email' => sprintf('user-%d@fixtures.invalid', $users + $n),
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'user_attributes', 'id', $attributes, $this->rows($recipe->users, static fn (int $n): array => [
+            'id' => $attributes + $n,
+            'internalKey' => $users + $n,
+            'fullname' => sprintf('Fixture user %d', $n + 1),
+            'email' => sprintf('user-%d@fixtures.invalid', $users + $n),
+        ]));
         $announce('users', $recipe->users);
 
         if ($recipe->memberGroups < 1) {
@@ -144,23 +147,17 @@ class Generator
         }
 
         $groups = $this->reserve('membergroup_names');
-        $ranges[] = $this->note($batch, 'membergroup_names', 'id', $groups, $this->writer->into(
-            'membergroup_names',
-            $this->rows($recipe->memberGroups, static fn (int $n): array => [
-                'id' => $groups + $n,
-                'name' => sprintf('fixture-group-%d', $groups + $n),
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'membergroup_names', 'id', $groups, $this->rows($recipe->memberGroups, static fn (int $n): array => [
+            'id' => $groups + $n,
+            'name' => sprintf('fixture-group-%d', $groups + $n),
+        ]));
 
         $members = $this->reserve('member_groups');
-        $ranges[] = $this->note($batch, 'member_groups', 'id', $members, $this->writer->into(
-            'member_groups',
-            $this->rows($recipe->users, static fn (int $n): array => [
-                'id' => $members + $n,
-                'user_group' => $groups + ($n % $recipe->memberGroups),
-                'member' => $users + $n,
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'member_groups', 'id', $members, $this->rows($recipe->users, static fn (int $n): array => [
+            'id' => $members + $n,
+            'user_group' => $groups + ($n % $recipe->memberGroups),
+            'member' => $users + $n,
+        ]));
         $announce('member groups', $recipe->memberGroups);
 
         if ($recipe->documentGroups < 1) {
@@ -168,33 +165,24 @@ class Generator
         }
 
         $docGroups = $this->reserve('documentgroup_names');
-        $ranges[] = $this->note($batch, 'documentgroup_names', 'id', $docGroups, $this->writer->into(
-            'documentgroup_names',
-            $this->rows($recipe->documentGroups, static fn (int $n): array => [
-                'id' => $docGroups + $n,
-                'name' => sprintf('fixture-docgroup-%d', $docGroups + $n),
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'documentgroup_names', 'id', $docGroups, $this->rows($recipe->documentGroups, static fn (int $n): array => [
+            'id' => $docGroups + $n,
+            'name' => sprintf('fixture-docgroup-%d', $docGroups + $n),
+        ]));
 
         $assignments = $this->reserve('document_groups');
-        $ranges[] = $this->note($batch, 'document_groups', 'id', $assignments, $this->writer->into(
-            'document_groups',
-            $this->rows($recipe->documents, static fn (int $n): array => [
-                'id' => $assignments + $n,
-                'document_group' => $docGroups + ($n % $recipe->documentGroups),
-                'document' => $documents + $n,
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'document_groups', 'id', $assignments, $this->rows($recipe->documents, static fn (int $n): array => [
+            'id' => $assignments + $n,
+            'document_group' => $docGroups + ($n % $recipe->documentGroups),
+            'document' => $documents + $n,
+        ]));
 
         $access = $this->reserve('membergroup_access');
-        $ranges[] = $this->note($batch, 'membergroup_access', 'id', $access, $this->writer->into(
-            'membergroup_access',
-            $this->rows($recipe->memberGroups, static fn (int $n): array => [
-                'id' => $access + $n,
-                'membergroup' => $groups + $n,
-                'documentgroup' => $docGroups + ($n % $recipe->documentGroups),
-            ])
-        ));
+        $ranges[] = $this->write($batch, 'membergroup_access', 'id', $access, $this->rows($recipe->memberGroups, static fn (int $n): array => [
+            'id' => $access + $n,
+            'membergroup' => $groups + $n,
+            'documentgroup' => $docGroups + ($n % $recipe->documentGroups),
+        ]));
         $announce('document groups', $recipe->documentGroups);
 
         return $ranges;
@@ -261,10 +249,13 @@ class Generator
     }
 
     /** @return iterable<array<string, mixed>> */
-    private function closure(Tree $tree, int $base): iterable
+    private function closure(Tree $tree, int $base, int $first): iterable
     {
+        $id = $first;
+
         foreach ($tree->closure() as [$ancestor, $descendant, $depth]) {
             yield [
+                'closure_id' => $id++,
                 'ancestor' => $base + $ancestor - 1,
                 'descendant' => $base + $descendant - 1,
                 'depth' => $depth,
@@ -273,13 +264,15 @@ class Generator
     }
 
     /** @return iterable<array<string, mixed>> */
-    private function values(Recipe $recipe, int $documents, int $tmplvars): iterable
+    private function values(Recipe $recipe, int $documents, int $tmplvars, int $first): iterable
     {
+        $id = $first;
         $filler = str_repeat('word ', 12);
 
         for ($node = 0; $node < $recipe->documents; $node++) {
             for ($n = 0; $n < $recipe->valuesPerDocument; $n++) {
                 yield [
+                    'id' => $id++,
                     'tmplvarid' => $tmplvars + (($node + $n) % $recipe->tmplvars),
                     'contentid' => $documents + $node,
                     'value' => sprintf('value %d-%d %s', $node, $n, $filler),
@@ -296,13 +289,44 @@ class Generator
         }
     }
 
-    private function note(int $batch, string $table, string $column, int $first, int $rows): Range
+    /** @param iterable<array<string, mixed>> $rows */
+    private function write(int $batch, string $table, string $column, int $first, iterable $rows): Range
     {
-        $last = (int) $this->connection->table($table)->max($column);
-        $range = new Range($table, $column, $first, max($first, $last), $rows);
-        $this->ledger->note($batch, $range);
+        $confirmed = new Range($table, $column, $first, $first - 1, 0);
+        $claimed = $confirmed;
+        $opened = false;
 
-        return $range;
+        $claim = function (array $buffer) use ($batch, &$confirmed, &$claimed, &$opened): void {
+            $confirmed = $claimed;
+            $claimed = new Range(
+                $claimed->table,
+                $claimed->keyColumn,
+                $claimed->first,
+                (int) $buffer[array_key_last($buffer)][$claimed->keyColumn],
+                $claimed->rows + count($buffer)
+            );
+
+            if ($opened) {
+                $this->ledger->extend($batch, $claimed);
+            } else {
+                $this->ledger->note($batch, $claimed);
+                $opened = true;
+            }
+        };
+
+        try {
+            $this->writer->into($table, $rows, $claim);
+        } catch (QueryException $e) {
+            if ((string) $e->getCode() === self::DUPLICATE_KEY && $opened) {
+                $confirmed->isEmpty()
+                    ? $this->ledger->release($batch, $table)
+                    : $this->ledger->extend($batch, $confirmed);
+            }
+
+            throw $e;
+        }
+
+        return $claimed;
     }
 
     private function reserve(string $table, string $column = 'id'): int
