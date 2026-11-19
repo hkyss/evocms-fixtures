@@ -17,7 +17,7 @@ final class Range
 
     public function isEmpty(): bool
     {
-        return $this->rows === 0 || $this->last < $this->first;
+        return $this->last < $this->first;
     }
 
     public function describe(): string

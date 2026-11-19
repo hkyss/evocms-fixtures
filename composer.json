@@ -33,6 +33,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
+        "illuminate/events": "^8.0|^9.0|^10.0|^11.0|^12.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.6|^10.5"
     },
