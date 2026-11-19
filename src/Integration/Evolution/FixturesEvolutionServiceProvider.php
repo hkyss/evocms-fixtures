@@ -42,10 +42,23 @@ class FixturesEvolutionServiceProvider extends FixturesServiceProvider
             $this->answer($token, $session, $config);
         });
 
-        $events->listen('evolution.OnWebPagePrerender', static function () use ($token, $session, $config): void {
+        $events->listen('evolution.OnWebPagePrerender', function () use ($token, $session, $config): void {
             evo()->documentOutput = (new Panel($token->mint($session), $config->maxDocuments))
-                ->injectInto((string) evo()->documentOutput);
+                ->injectInto((string) evo()->documentOutput, $this->contentType());
         });
+    }
+
+    private function contentType(): string
+    {
+        foreach (array_reverse(headers_list()) as $header) {
+            if (stripos($header, 'content-type:') === 0) {
+                return trim(substr($header, strlen('content-type:')));
+            }
+        }
+
+        $declared = evo()->documentObject['contentType'] ?? '';
+
+        return is_string($declared) && $declared !== '' ? $declared : 'text/html';
     }
 
     private function answer(Token $token, string $session, Config $config): void
