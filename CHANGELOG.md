@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-11-19
+
+### Changed
+
+- `fixture:make` stops on a site that does not look like a development one: `app.env` (or `APP_ENV`
+  in the process environment) must be `local`, `development`, `dev` or `testing`, or `app.debug`
+  must be on. Evolution ships `production` with debug off, so a stock site needs `--force`.
+  `--no-interaction` does not count as `--force`.
+- The panel is added only to HTML responses (`text/html` or `application/xhtml+xml`) that have a
+  closing `</body>`. Feeds, JSON and pages without a body tag are left as they were.
+
+### Fixed
+
+- A batch is recorded before it is written. Each range is noted before its first chunk and
+  widened before every chunk, so a batch that dies part-way can still be dropped, and a row
+  another process writes while the batch runs is no longer taken by `fixture:drop`. The closure
+  and the template variable values are written with ids from a reserved block like every other
+  table. Inserts are still multi-row; the speed is the same within a few percent.
+
 ## [1.2.6] - 2026-10-29
 
 ### Changed
